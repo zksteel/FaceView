@@ -1,6 +1,7 @@
 package org.faceview.common;
 
 import io.jsonwebtoken.Jwts;
+import org.faceview.user.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,8 +19,12 @@ import static org.faceview.common.JwtConstants.AUTHORIZATION_PREFIX;
 import static org.faceview.common.JwtConstants.SECRET_ID;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
+
+    private final UserService userService;
+
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserService userService) {
         super(authenticationManager);
+        this.userService = userService;
     }
 
     @Override
@@ -51,7 +56,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     .getSubject();
 
             if(user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                return new UsernamePasswordAuthenticationToken(
+                        user,
+                        null,
+                        this.userService.loadUserByUsername(user).getAuthorities());
             }
 
         return null;

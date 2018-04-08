@@ -62,6 +62,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                  .compact();
 
          response.addHeader(AUTHORIZATION_HEADER, AUTHORIZATION_PREFIX + token);
+         response.addHeader("Content-type", "application/json");
+         response.getWriter().append("{\"Authorization\": \"" + AUTHORIZATION_PREFIX + token + "\"}");
     }
 
     @Override
@@ -70,6 +72,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                               AuthenticationException failed)
             throws IOException, ServletException {
         response.addHeader("Content-type", "application/json");
-        response.getWriter().append("{\"error\": \"Invalid Credentials\" }");
+        response.getWriter().append("{\"error\": {\"message\": \"Invalid Credentials\" } }");
     }
 }

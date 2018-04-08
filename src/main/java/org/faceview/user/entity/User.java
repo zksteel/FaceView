@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -23,16 +23,27 @@ public class User implements UserDetails {
     @Column(name = "id", updatable = false, nullable = false)
     private String id;
 
+    @Column(nullable = false, unique = true)
     private String username;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String password;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<Role> roles;
+
+    public User() {
+        this.roles = new ArrayList<>();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return new ArrayList<>();
+        return this.roles;
     }
 
     @Override
@@ -89,5 +100,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
+    public List<Role> getRoles() {
+        return roles;
+    }
 
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
 }

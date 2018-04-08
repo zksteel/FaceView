@@ -4,6 +4,7 @@ import org.faceview.user.model.RegisterUserModel;
 import org.faceview.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,5 +26,12 @@ public class SecurityController {
     public String test(){
 
         return "you are logged in";
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/admin")
+    public String admin(){
+
+        return "you are admin";
     }
 }
