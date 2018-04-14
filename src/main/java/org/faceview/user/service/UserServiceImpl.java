@@ -1,19 +1,36 @@
 package org.faceview.user.service;
 
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import org.faceview.exceptions.UserTakenException;
 import org.faceview.user.entity.User;
 import org.faceview.user.model.RegisterUserModel;
+import org.faceview.user.model.UserSearchResultModel;
 import org.faceview.user.repository.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.List;
 
+@Transactional
 @Service
 public class UserServiceImpl implements UserService {
+
+    private static final String CLOUD_STORAGE_BUCKET = "test-7eb29.appspot.com";
 
     private final UserRepository userRepository;
 
@@ -23,16 +40,25 @@ public class UserServiceImpl implements UserService {
 
     private final ModelMapper modelMapper;
 
+    private final Storage storage;
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleService roleService, ModelMapper modelMapper) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleService roleService, ModelMapper modelMapper, Storage storage) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.roleService = roleService;
         this.modelMapper = modelMapper;
+        this.storage = storage;
     }
 
     @Override
     public RegisterUserModel save(RegisterUserModel userModel) {
+        User search = this.userRepository.getUserByUsername(userModel.getUsername());
+
+        if(search != null){
+            throw new UserTakenException("username is already taken");
+        }
+
         User user = this.modelMapper.map(userModel, User.class);
         user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
         user.setRoles(Arrays.asList(this.roleService.getOneByAuthority("ROLE_USER")));
@@ -41,6 +67,60 @@ public class UserServiceImpl implements UserService {
 
         return userModel;
     }
+
+    @Override
+    public List<UserSearchResultModel> findUsersWithUsernameContaining(String substring, String username) {
+
+        List<User> userContaining = this.userRepository.findUsersByUsernameContainingAndUsernameIsNot(substring,username);
+        Type listType = new TypeToken<List<UserSearchResultModel>>() {}.getType();
+
+
+        List<UserSearchResultModel> userSearchResultModels = this.modelMapper
+                .map(userContaining, listType);
+
+        return userSearchResultModels;
+    }
+
+    @Override
+    public User findById(String id) {
+
+        return this.userRepository.findById(id).get();
+    }
+
+    @Override
+    public void saveProfilePic(MultipartFile file, String receiverId, String senderId) {
+        try {
+            //TODO: Save image to cloud with UUID for name
+            //TODO: Clean up code
+            BlobId blobId = BlobId.of(CLOUD_STORAGE_BUCKET, senderId + "/" + file.getOriginalFilename());
+            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/jpeg").build();
+            Blob blob = this.storage.create(blobInfo, file.getInputStream().readAllBytes());
+
+            String link = this.storage.get(blobId).getMediaLink();
+            this.userRepository.updateProfilePic(link, receiverId);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void saveCoverPic(MultipartFile file, String receiverId, String senderId) {
+        try {
+            //TODO: Save image to cloud with UUID for name
+            BlobId blobId = BlobId.of(CLOUD_STORAGE_BUCKET, senderId + "/" + file.getOriginalFilename());
+            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/jpeg").build();
+            Blob blob = this.storage.create(blobInfo, file.getInputStream().readAllBytes());
+            System.out.println(blobInfo.getSelfLink());
+
+            String link = this.storage.get(blobId).getMediaLink();
+            this.userRepository.updateCoverPic(link, receiverId);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {

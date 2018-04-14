@@ -1,11 +1,16 @@
 package org.faceview.user.model;
 
+import javax.validation.constraints.NotEmpty;
+
 public class RegisterUserModel {
 
+    @NotEmpty
     private String username;
 
+    @NotEmpty
     private String email;
 
+    @NotEmpty
     private String password;
 
     public RegisterUserModel() {

@@ -9,7 +9,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,13 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-
 import static org.faceview.common.JwtConstants.AUTHORIZATION_HEADER;
 import static org.faceview.common.JwtConstants.AUTHORIZATION_PREFIX;
 import static org.faceview.common.JwtConstants.SECRET_ID;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private static final int EXPIRATION_MILLISECONDS = 1200000;
+    private static final int EXPIRATION_MILLISECONDS = 12000000;
 
     private final AuthenticationManager authenticationManager;
 
@@ -63,7 +61,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
          response.addHeader(AUTHORIZATION_HEADER, AUTHORIZATION_PREFIX + token);
          response.addHeader("Content-type", "application/json");
-         response.getWriter().append("{\"Authorization\": \"" + AUTHORIZATION_PREFIX + token + "\"}");
+         response.getWriter().append("{\"Authorization\": \"" + AUTHORIZATION_PREFIX + token + "\"" +
+                 ", \"id\": \"" + ((User) authResult.getPrincipal()).getId() +"\" }");
     }
 
     @Override
@@ -71,6 +70,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                               HttpServletResponse response,
                                               AuthenticationException failed)
             throws IOException, ServletException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.addHeader("Content-type", "application/json");
         response.getWriter().append("{\"error\": {\"message\": \"Invalid Credentials\" } }");
     }
