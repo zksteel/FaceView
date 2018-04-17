@@ -1,6 +1,7 @@
 package org.faceview.user.controller;
 
 
+import org.faceview.user.entity.User;
 import org.faceview.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,24 +23,41 @@ public class UserController {
     }
 
     @GetMapping("users/{substring}/search")
-    public ResponseEntity<List> usersSearch(@PathVariable String substring, Principal principal) {
+    public ResponseEntity<List> usersSearchAction(@PathVariable String substring, Principal principal) {
 
         return new ResponseEntity<List>(this.userService.findUsersWithUsernameContaining(substring, principal.getName()), HttpStatus.OK);
     }
 
     @PostMapping(value = "/users/{id}/profilePic")
     public String uploadProfImage(@PathVariable String id,
-                              @RequestParam("file") MultipartFile multipartFile,
-                              Principal principal) {
-        this.userService.saveProfilePic(multipartFile, id, id);
+                                  @RequestParam("file") MultipartFile multipartFile,
+                                  Principal principal) {
+        this.userService.saveProfilePic(multipartFile, id, principal);
         return null;
     }
 
     @PostMapping(value = "/users/{id}/coverPic")
     public String uploadCoverImage(@PathVariable String id,
-                              @RequestParam("file") MultipartFile multipartFile,
-                              Principal principal) {
-        this.userService.saveCoverPic(multipartFile, id, id);
+                                   @RequestParam("file") MultipartFile multipartFile,
+                                   Principal principal) {
+        this.userService.saveCoverPic(multipartFile, id, principal);
         return null;
+    }
+
+    @GetMapping("/friends/all/{id}")
+    public ResponseEntity<List> getFriends(@PathVariable String id) {
+
+        return new ResponseEntity<>(this.userService.findAllFriends(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/friends/check/{id}")
+    public String isFriend(@PathVariable String id, Principal principal) {
+        boolean result = this.userService.isFriend(principal.getName(), id);
+
+        if (result) {
+            return "{ \"result\": true }";
+        } else {
+            return "{ \"result\": false }";
+        }
     }
 }

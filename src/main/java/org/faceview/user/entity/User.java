@@ -1,5 +1,6 @@
 package org.faceview.user.entity;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +29,9 @@ public class User implements UserDetails {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @ManyToMany()
+    private List<User> friends;
 
     private String password;
 
@@ -136,5 +140,13 @@ public class User implements UserDetails {
 
     public void setTown(String town) {
         this.town = town;
+    }
+
+    public List<User> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(List<User> friends) {
+        this.friends = friends;
     }
 }

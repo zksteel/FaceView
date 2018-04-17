@@ -4,6 +4,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import org.faceview.exceptions.UserIllegalEditException;
 import org.faceview.exceptions.UserTakenException;
 import org.faceview.user.entity.User;
 import org.faceview.user.model.RegisterUserModel;
@@ -23,8 +24,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -88,8 +91,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveProfilePic(MultipartFile file, String receiverId, String senderId) {
+    public void saveProfilePic(MultipartFile file, String receiverId, Principal principal) {
         try {
+
+            String senderId = this.userRepository.getUserByUsername(principal.getName()).getId();
+            if(!receiverId.equals(senderId)){
+                throw new UserIllegalEditException();
+            }
             //TODO: Save image to cloud with UUID for name
             //TODO: Clean up code
             BlobId blobId = BlobId.of(CLOUD_STORAGE_BUCKET, senderId + "/" + file.getOriginalFilename());
@@ -105,13 +113,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveCoverPic(MultipartFile file, String receiverId, String senderId) {
+    public void saveCoverPic(MultipartFile file, String receiverId, Principal principal) {
         try {
+            String senderId = this.userRepository.getUserByUsername(principal.getName()).getId();
+            if(!receiverId.equals(senderId)){
+                throw new UserIllegalEditException();
+            }
             //TODO: Save image to cloud with UUID for name
             BlobId blobId = BlobId.of(CLOUD_STORAGE_BUCKET, senderId + "/" + file.getOriginalFilename());
             BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/jpeg").build();
             Blob blob = this.storage.create(blobInfo, file.getInputStream().readAllBytes());
-            System.out.println(blobInfo.getSelfLink());
 
             String link = this.storage.get(blobId).getMediaLink();
             this.userRepository.updateCoverPic(link, receiverId);
@@ -119,6 +130,40 @@ public class UserServiceImpl implements UserService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<User> findAllFriends(String userId) {
+        return this.userRepository.findAllFriends(userId);
+    }
+
+    @Override
+    public Boolean isFriend(String username, String friendId) {
+        User user = this.userRepository.getUserByUsername(username);
+        List<User> allFriends = this.userRepository.findAllFriends(user.getId());
+
+        List<User> friends = allFriends.stream().filter( u -> u.getId().equals(friendId)).collect(Collectors.toList());
+
+        return friends.size() == 1;
+    }
+
+    @Override
+    public User findOneByUsername(String username) {
+        return this.userRepository.getUserByUsername(username);
+    }
+
+    @Override
+    public void addFriend(User sender, User receiver) {
+        List<User> receiverFriends = receiver.getFriends();
+        receiverFriends.add(sender);
+        receiver.setFriends(receiverFriends);
+
+        List<User> senderFriends = sender.getFriends();
+        senderFriends.add(receiver);
+        sender.setFriends(senderFriends);
+
+        this.userRepository.save(receiver);
+        this.userRepository.save(sender);
     }
 
 

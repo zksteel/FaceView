@@ -21,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Modifying
     @Query("UPDATE User u set u.coverPic = ?1 where u.id = ?2")
     void updateCoverPic(String url, String id);
+
+    @Query("SELECT u.friends FROM User u WHERE u.id = ?1")
+    List<User> findAllFriends(String userId);
 }
