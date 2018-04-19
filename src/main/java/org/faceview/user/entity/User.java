@@ -44,6 +44,8 @@ public class User implements UserDetails {
 
     private String about;
 
+    private Integer age;
+
     @OneToMany(mappedBy = "author")
     private List<Post> posts;
 
@@ -170,5 +172,13 @@ public class User implements UserDetails {
 
     public void setAbout(String about) {
         this.about = about;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 }

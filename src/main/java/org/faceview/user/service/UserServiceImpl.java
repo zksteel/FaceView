@@ -7,6 +7,7 @@ import com.google.cloud.storage.Storage;
 import org.faceview.exceptions.UserIllegalEditException;
 import org.faceview.exceptions.UserTakenException;
 import org.faceview.user.entity.User;
+import org.faceview.user.model.EditUserBindingModel;
 import org.faceview.user.model.RegisterUserModel;
 import org.faceview.user.model.UserSearchResultModel;
 import org.faceview.user.repository.UserRepository;
@@ -161,6 +162,17 @@ public class UserServiceImpl implements UserService {
 
         this.userRepository.save(receiver);
         this.userRepository.save(sender);
+    }
+
+    @Override
+    public void editUser(EditUserBindingModel bindingModel, String username) {
+        User user = this.userRepository.getUserByUsername(username);
+
+        user.setAbout(bindingModel.getAbout());
+        user.setTown(bindingModel.getTown());
+        user.setAge(bindingModel.getAge());
+
+        this.userRepository.save(user);
     }
 
 

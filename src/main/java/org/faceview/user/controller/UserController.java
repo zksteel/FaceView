@@ -1,7 +1,6 @@
 package org.faceview.user.controller;
 
-
-import org.faceview.user.entity.User;
+import org.faceview.user.model.EditUserBindingModel;
 import org.faceview.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,5 +58,12 @@ public class UserController {
         } else {
             return "{ \"result\": false }";
         }
+    }
+
+    @PostMapping("/users/edit")
+    public ResponseEntity editUser(@RequestBody EditUserBindingModel bindingModel, Principal principal){
+
+        this.userService.editUser(bindingModel, principal.getName());
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

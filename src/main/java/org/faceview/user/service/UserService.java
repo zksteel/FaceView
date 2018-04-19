@@ -1,6 +1,7 @@
 package org.faceview.user.service;
 
 import org.faceview.user.entity.User;
+import org.faceview.user.model.EditUserBindingModel;
 import org.faceview.user.model.RegisterUserModel;
 import org.faceview.user.model.UserSearchResultModel;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,4 +31,6 @@ public interface UserService extends UserDetailsService {
     User findOneByUsername(String username);
 
     void addFriend(User sender, User receiver);
+
+    void editUser(EditUserBindingModel bindingModel, String username);
 }
