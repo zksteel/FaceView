@@ -13,6 +13,7 @@ import java.io.IOException;
 
 @Configuration
 public class ApplicationBeanConfig {
+    public static final String CLOUD_STORAGE_BUCKET = "test-7eb29.appspot.com";
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){

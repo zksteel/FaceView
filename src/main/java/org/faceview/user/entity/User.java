@@ -1,6 +1,7 @@
 package org.faceview.user.entity;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.faceview.post.entity.Post;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,6 +41,11 @@ public class User implements UserDetails {
     private String coverPic;
 
     private String town;
+
+    private String about;
+
+    @OneToMany(mappedBy = "author")
+    private List<Post> posts;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
@@ -148,5 +154,21 @@ public class User implements UserDetails {
 
     public void setFriends(List<User> friends) {
         this.friends = friends;
+    }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
     }
 }

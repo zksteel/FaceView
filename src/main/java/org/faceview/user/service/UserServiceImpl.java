@@ -19,21 +19,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.faceview.config.ApplicationBeanConfig.CLOUD_STORAGE_BUCKET;
+
 @Transactional
 @Service
 public class UserServiceImpl implements UserService {
-
-    private static final String CLOUD_STORAGE_BUCKET = "test-7eb29.appspot.com";
 
     private final UserRepository userRepository;
 
