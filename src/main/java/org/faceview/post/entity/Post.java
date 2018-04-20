@@ -23,6 +23,8 @@ public class Post {
 
     private String imageUrl;
 
+    private String cloudBlob;
+
     private Date createdOn;
 
     @ManyToOne
@@ -69,5 +71,13 @@ public class Post {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public String getCloudBlob() {
+        return cloudBlob;
+    }
+
+    public void setCloudBlob(String cloudBlob) {
+        this.cloudBlob = cloudBlob;
     }
 }

@@ -63,7 +63,7 @@ public class PostServiceImpl implements PostService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            post.setCloudBlob(blobId.getName());
             String link = this.storage.get(blobId).getMediaLink();
             post.setImageUrl(link);
         }
@@ -121,7 +121,10 @@ public class PostServiceImpl implements PostService {
 
         if(!user.getPosts().contains(post)) throw new UserIllegalEditException();
 
-        //TODO
+        //Delete image from Google Cloud using stored blobId
+        BlobId blobId = BlobId.of(CLOUD_STORAGE_BUCKET, post.getCloudBlob());
+        this.storage.delete(blobId);
+
         user.getPosts().remove(post);
         this.userRepository.save(user);
 
