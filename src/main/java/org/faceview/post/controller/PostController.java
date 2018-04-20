@@ -5,11 +5,12 @@ import org.faceview.post.model.CreatePostBindingModel;
 import org.faceview.post.model.EditPostBindingModel;
 import org.faceview.post.model.GetPostViewModel;
 import org.faceview.post.service.PostService;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.security.Principal;
 import java.util.List;
 
@@ -41,8 +42,8 @@ public class PostController {
     }
 
     @GetMapping("/posts/all")
-    public ResponseEntity globalTimeline(Principal principal){
-        List<GetPostViewModel> allPosts = this.postService.getAllPosts(principal.getName());
+    public ResponseEntity globalTimeline(Principal principal, @PageableDefault(size = 3) Pageable pageable){
+        List<GetPostViewModel> allPosts = this.postService.getAllPosts(principal.getName(), pageable);
 
         return new ResponseEntity<List>(allPosts, HttpStatus.OK);
     }

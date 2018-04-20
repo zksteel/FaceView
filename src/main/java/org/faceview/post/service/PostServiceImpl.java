@@ -4,6 +4,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import org.faceview.exceptions.NoPostsException;
 import org.faceview.exceptions.UserIllegalEditException;
 import org.faceview.post.entity.Post;
 import org.faceview.post.model.CreatePostBindingModel;
@@ -15,6 +16,7 @@ import org.faceview.user.repository.UserRepository;
 import org.faceview.user.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -96,14 +98,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<GetPostViewModel> getAllPosts(String username) {
-
+    public List<GetPostViewModel> getAllPosts(String username, Pageable pageable) {
         User user = this.userService.findOneByUsername(username);
-        List<Post> posts = user.getPosts();
-
-        for (User friend : user.getFriends()) {
-            posts.addAll(friend.getPosts());
+        if(user == null || (user.getFriends().size() == 0 && user.getPosts().size() == 0)){
+            throw new NoPostsException();
         }
+
+        List<Post> posts = this.postRepository.findAllPageable(user, user.getFriends(),pageable);
 
         Type listType = new TypeToken<List<GetPostViewModel>>(){}.getType();
         List<GetPostViewModel> allPosts = this.modelMapper.map(posts, listType);

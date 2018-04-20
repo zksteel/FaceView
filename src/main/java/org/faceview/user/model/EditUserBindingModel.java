@@ -1,7 +1,10 @@
 package org.faceview.user.model;
 
+import javax.validation.constraints.Min;
+
 public class EditUserBindingModel {
 
+    @Min(12)
     private Integer age;
 
     private String town;

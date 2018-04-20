@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class UserController {
     }
 
     @PostMapping("/users/edit")
-    public ResponseEntity editUser(@RequestBody EditUserBindingModel bindingModel, Principal principal){
+    public ResponseEntity editUser(@RequestBody @Valid EditUserBindingModel bindingModel, Principal principal){
 
         this.userService.editUser(bindingModel, principal.getName());
         return new ResponseEntity(HttpStatus.OK);
