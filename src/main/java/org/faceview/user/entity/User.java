@@ -1,6 +1,7 @@
 package org.faceview.user.entity;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.faceview.gallery.entity.Gallery;
 import org.faceview.post.entity.Post;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
@@ -54,6 +55,9 @@ public class User implements UserDetails {
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private Gallery gallery;
 
     public User() {
         this.roles = new ArrayList<>();
@@ -180,5 +184,13 @@ public class User implements UserDetails {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public Gallery getGallery() {
+        return gallery;
+    }
+
+    public void setGallery(Gallery gallery) {
+        this.gallery = gallery;
     }
 }

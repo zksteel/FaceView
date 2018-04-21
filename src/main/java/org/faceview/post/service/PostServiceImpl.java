@@ -55,7 +55,6 @@ public class PostServiceImpl implements PostService {
 
         if(bindingModel.getImage() != null){
             String postImgDir = author.getId() + "/" + "posts/" + UUID.randomUUID();
-            String test = bindingModel.getImage().getOriginalFilename();
             BlobId blobId = BlobId.of(CLOUD_STORAGE_BUCKET, postImgDir);
             BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/jpeg").build();
             try {
