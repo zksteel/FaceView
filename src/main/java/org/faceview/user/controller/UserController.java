@@ -25,7 +25,7 @@ public class UserController {
     @GetMapping("users/{substring}/search")
     public ResponseEntity<List> usersSearchAction(@PathVariable String substring, Principal principal) {
 
-        return new ResponseEntity<List>(this.userService.findUsersWithUsernameContaining(substring, principal.getName()), HttpStatus.OK);
+        return new ResponseEntity<>(this.userService.findUsersWithUsernameContaining(substring, principal.getName()), HttpStatus.OK);
     }
 
     @PostMapping(value = "/users/{id}/profilePic")

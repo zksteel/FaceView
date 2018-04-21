@@ -13,15 +13,7 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, String> {
     User getUserByUsername(String username);
 
-    List<User> findUsersByUsernameContainingAndUsernameIsNot(String username, String id);
-
-    @Modifying
-    @Query("UPDATE User u set u.profilePic = ?1 where u.id = ?2")
-    void updateProfilePic(String url, String id);
-
-    @Modifying
-    @Query("UPDATE User u set u.coverPic = ?1 where u.id = ?2")
-    void updateCoverPic(String url, String id);
+    List<User> findUsersByUsernameContainingAndUsernameIsNot(String username, String loggedInUsername);
 
     @Query("SELECT u.friends FROM User u WHERE u.id = ?1")
     List<User> findAllFriends(String userId);

@@ -82,12 +82,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserSearchResultModel> findUsersWithUsernameContaining(String substring, String username) {
+    public List<UserSearchResultModel> findUsersWithUsernameContaining(String substring, String loggedInUsername) {
 
-        List<User> userContaining = this.userRepository.findUsersByUsernameContainingAndUsernameIsNot(substring, username);
+        List<User> userContaining = this.userRepository.findUsersByUsernameContainingAndUsernameIsNot(substring, loggedInUsername);
         Type listType = new TypeToken<List<UserSearchResultModel>>() {
         }.getType();
-
 
         List<UserSearchResultModel> userSearchResultModels = this.modelMapper
                 .map(userContaining, listType);
