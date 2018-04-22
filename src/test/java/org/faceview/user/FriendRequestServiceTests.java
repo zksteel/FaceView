@@ -23,6 +23,8 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 public class FriendRequestServiceTests {
 
+    private static final String FRIEND_REQUEST_NOT_FOUND_USER_MSG = "Unhandled null user case";
+
     @Mock
     private UserService userService;
 
@@ -43,7 +45,7 @@ public class FriendRequestServiceTests {
 
         boolean result = this.friendRequestService.acceptFriendRequest("2", "4");
 
-        assertFalse("Unhandled null user case", result);
+        assertFalse(FRIEND_REQUEST_NOT_FOUND_USER_MSG, result);
     }
 
     @Test
@@ -52,7 +54,7 @@ public class FriendRequestServiceTests {
 
         boolean result = this.friendRequestService.acceptFriendRequest("2", "4");
 
-        assertFalse("Unhandled null user case", result);
+        assertFalse(FRIEND_REQUEST_NOT_FOUND_USER_MSG, result);
     }
 
     @Test

@@ -23,6 +23,8 @@ import static junit.framework.TestCase.assertEquals;
 @ActiveProfiles("test")
 public class UserRepositoryTests {
 
+    private static final String FIND_ALL_FRIENDS_EXPECTED = "gosho,tosho";
+
     @Autowired
     private TestEntityManager testEntityManager;
 
@@ -51,7 +53,7 @@ public class UserRepositoryTests {
 
         List<User> friends = this.userRepository.findAllFriends(pesho.getId());
 
-        assertEquals("gosho,tosho", String.join(",", friends.stream().map(User::getUsername).collect(Collectors.toList())));
+        assertEquals(FIND_ALL_FRIENDS_EXPECTED, String.join(",", friends.stream().map(User::getUsername).collect(Collectors.toList())));
     }
 
     @Test

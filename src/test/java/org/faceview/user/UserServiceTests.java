@@ -27,6 +27,10 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 public class UserServiceTests {
 
+    private static final String FIND_USERS_BY_SUBSTRING_EXPECTED = "pesho,gosho";
+    private static final String FRIENDS_NOT_FOUND_MSG = "Friend cannon be found";
+    private static final String TEST_GET_USER_BY_USERNAME_EXPECTED = "ivan";
+
     @Mock
     private UserRepository userRepository;
 
@@ -61,14 +65,14 @@ public class UserServiceTests {
 
         List<UserSearchResultModel> userList = this.userService.findUsersWithUsernameContaining("o", "ivan");
 
-        assertEquals("pesho,gosho", String.join(",", userList.stream().map(UserSearchResultModel::getUsername).collect(Collectors.toList())));
+        assertEquals(FIND_USERS_BY_SUBSTRING_EXPECTED, String.join(",", userList.stream().map(UserSearchResultModel::getUsername).collect(Collectors.toList())));
     }
 
     @Test
     public void testIsFriendMethod_withLoggedInUsernameAndFriendId_shouldReturnTrue(){
         boolean result = this.userService.isFriend("ivan", "3");
 
-        assertTrue("Friend cannon be found", result);
+        assertTrue(FRIENDS_NOT_FOUND_MSG, result);
     }
 
     @Test
@@ -76,7 +80,7 @@ public class UserServiceTests {
 
         UserDetails user = this.userService.loadUserByUsername("ivan");
 
-        assertEquals("ivan", user.getUsername());
+        assertEquals(TEST_GET_USER_BY_USERNAME_EXPECTED, user.getUsername());
     }
 
 

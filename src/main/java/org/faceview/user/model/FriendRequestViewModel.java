@@ -1,6 +1,7 @@
 package org.faceview.user.model;
 
 public class FriendRequestViewModel {
+
     private String senderId;
 
     private String senderProfilePic;
