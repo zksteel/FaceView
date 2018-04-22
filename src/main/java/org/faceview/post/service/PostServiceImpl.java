@@ -102,8 +102,12 @@ public class PostServiceImpl implements PostService {
         if(user == null || (user.getFriends().size() == 0 && user.getPosts().size() == 0)){
             throw new NoPostsException();
         }
-
-        List<Post> posts = this.postRepository.findAllPageable(user, user.getFriends(),pageable);
+        List<Post> posts;
+        if(user.getFriends().size() != 0){
+            posts = this.postRepository.findAllPageable(user, user.getFriends(),pageable);
+        }else{
+            posts = this.postRepository.findAllPageable(user, null,pageable);
+        }
 
         Type listType = new TypeToken<List<GetPostViewModel>>(){}.getType();
         List<GetPostViewModel> allPosts = this.modelMapper.map(posts, listType);

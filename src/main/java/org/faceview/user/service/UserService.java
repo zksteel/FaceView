@@ -33,4 +33,6 @@ public interface UserService extends UserDetailsService {
     void addFriend(User sender, User receiver);
 
     void editUser(EditUserBindingModel bindingModel, String username);
+
+    List<User> findAll();
 }

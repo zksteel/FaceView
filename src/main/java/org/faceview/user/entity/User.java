@@ -1,13 +1,12 @@
 package org.faceview.user.entity;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.faceview.gallery.entity.Gallery;
 import org.faceview.post.entity.Post;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +34,7 @@ public class User implements UserDetails {
     @ManyToMany()
     private List<User> friends;
 
+    @RestResource(exported = false)
     private String password;
 
     private String profilePic;
