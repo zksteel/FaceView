@@ -14,7 +14,7 @@ import java.io.IOException;
 @Configuration
 public class ApplicationBeanConfig {
     public static final String CLOUD_STORAGE_BUCKET = "test-7eb29.appspot.com";
-    private static final String CONFIG_FILE_PATH = "C:\\Users\\ivan\\Downloads\\test-2c45afcbf519.json";
+    private static final String CONFIG_FILE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\test-2c45afcbf519.json";
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
