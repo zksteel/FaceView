@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
@@ -62,7 +64,7 @@ public class PostController {
     }
 
     @PostMapping("/posts/edit")
-    public ResponseEntity editPost(@RequestBody EditPostBindingModel bindingModel, Principal principal){
+    public ResponseEntity editPost(@RequestBody @Valid EditPostBindingModel bindingModel, Principal principal){
         this.postService.editPost(principal.getName(), bindingModel);
 
         return new ResponseEntity(HttpStatus.OK);
