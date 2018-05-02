@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface PhotoService {
-    void save(Photo photo);
+    Photo save(Photo photo);
 }
