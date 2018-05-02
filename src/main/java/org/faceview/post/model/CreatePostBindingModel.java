@@ -2,8 +2,11 @@ package org.faceview.post.model;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotEmpty;
+
 public class CreatePostBindingModel {
 
+    @NotEmpty
     private String content;
 
     private MultipartFile image;
